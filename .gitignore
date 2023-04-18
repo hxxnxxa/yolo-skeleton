@@ -1,2 +1,4 @@
 labels/*.txt
 images/*.png
+*.ipynb
+.ipynb_checkpoints/*

@@ -6,11 +6,7 @@ import math
 import numpy as np
 
 
-# Default data paths
-SCRIPT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-
-# Translate the values
+# Translate the values (from yolo to pascal)
 def yolo_to_pascal_voc(x_center, y_center, w, h,  image_w, image_h):
     w = w * image_w
     h = h * image_h
@@ -24,17 +20,19 @@ def yolo_to_pascal_voc(x_center, y_center, w, h,  image_w, image_h):
 # Calculate center point each bounding box
 def bbox_center_calculator(img_path: str, lbl_path: str, save_path: str): 
 
+    img = sorted(glob.glob(os.path.join(img_path, '*.png')))
+    lbl = sorted(glob.glob(os.path.join(lbl_path, "*.txt")))
+
     if not os.path.exists(save_path):
         os.makedirs(os.path.join(save_path))
 
-    img = glob.glob(os.path.join(img_path, '*.png'))
+    for i in range(len(lbl)):
 
-    for lbl in os.listdir(lbl_path):
-
-        f = open(lbl_path,'r')
+        f = open(lbl[i],'r')
         data = f.read().splitlines()
 
         for line in data:
+
             lblList = []
 
             for point in data:
@@ -76,11 +74,11 @@ def bbox_center_calculator(img_path: str, lbl_path: str, save_path: str):
 
 
         # Draw circles (the length of lblList)
-        for i in range(len(lblList)):
-            cv2.circle(img[lbl], (math.ceil((((x1_int[i])+(x2_int[i]))/2)),math.ceil((((y1_int[i])+(y2_int[i]))/2))), 2, (0,0,255), -1)
+        for j in range(len(lblList)):
+            cv2.circle(img[i], (math.ceil((((x1_int[j])+(x2_int[j]))/2)), math.ceil((((y1_int[j])+(y2_int[j]))/2))), 2, (0,0,255), -1)
             
-        cv2.imwrite(save_path + lbl[:-4] + "_skeleton.png", img)
-        img = np.full((256,256,3),255,np.uint8)
+        cv2.imwrite(save_path + lbl[:-4] + "_skeleton.png", img[i])
+
 
 
 if __name__ == '__main__':
